@@ -1,0 +1,6 @@
+{
+  "name": "MedNexus",
+  "description": "Smart Medical Platform connecting citizens and hospital administrators with live bed tracking, smart ambulance dispatch, multilingual translation, and comprehensive hospital billing management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
