@@ -1,5 +1,8 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import heroImage from '../assets/images/hero_medical_network_1790940288085.jpg';
+import citizenImage from '../assets/images/citizen_patient_care_1790940298820.jpg';
+import adminImage from '../assets/images/admin_hospital_console_1790940311889.jpg';
 import {
   Activity,
   Bed,
@@ -35,10 +38,9 @@ export const HomeView: React.FC = () => {
         {/* Background Image with Ambient Gradient Overlay */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img
-            src="/src/assets/images/hero_medical_network_1790940288085.jpg"
+            src={heroImage}
             alt="MedNexus Network"
             className="w-full h-full object-cover object-center opacity-15 filter saturate-150"
-            referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/85 to-slate-950" />
         </div>
@@ -230,10 +232,9 @@ export const HomeView: React.FC = () => {
           <div className="rounded-3xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/40 transition-all overflow-hidden flex flex-col group shadow-xl">
             <div className="relative h-48 overflow-hidden">
               <img
-                src="/src/assets/images/citizen_patient_care_1790940298820.jpg"
+                src={citizenImage}
                 alt="Citizen Portal"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
               <div className="absolute bottom-4 left-4">
@@ -282,10 +283,9 @@ export const HomeView: React.FC = () => {
           <div className="rounded-3xl bg-slate-900/70 border border-slate-800 hover:border-amber-500/40 transition-all overflow-hidden flex flex-col group shadow-xl">
             <div className="relative h-48 overflow-hidden">
               <img
-                src="/src/assets/images/admin_hospital_console_1790940311889.jpg"
+                src={adminImage}
                 alt="Hospital Admin Portal"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
               <div className="absolute bottom-4 left-4">
