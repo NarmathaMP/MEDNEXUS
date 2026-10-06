@@ -55,7 +55,7 @@ export const AdminAuth: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-72px)] flex items-center justify-center p-4 sm:p-8 relative">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6 relative z-10">
+      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-8 shadow-2xl space-y-6 relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-800">
           <div className="flex items-center gap-2">
