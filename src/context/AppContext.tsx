@@ -15,7 +15,6 @@ import {
 } from '../types';
 import { translations } from '../translations';
 import {
-  SEED_HOSPITALS,
   SEED_INVOICES,
   SEED_APPOINTMENTS,
   SEED_AMBULANCE_REQUESTS,
@@ -88,6 +87,7 @@ interface AppContextType {
   updateAmbulanceStatus: (id: string, status: AmbulanceRequest['status']) => void;
 
   // Hospital Admin Actions
+  addHospital: (hospital: Omit<Hospital, 'id'> & { id?: string }) => Hospital;
   updateBed: (hospitalId: string, ward: string, field: 'available' | 'total', val: number) => void;
   addWard: (hospitalId: string, wardName: string, total: number) => void;
   deleteWard: (hospitalId: string, wardName: string) => void;
@@ -202,13 +202,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setView('home');
   };
 
-  // Data Store with LocalStorage backup
+  // Only registered hospitals should be visible in the citizen portal.
   const [hospitals, setHospitals] = useState<Hospital[]>(() => {
     try {
       const saved = localStorage.getItem('mednexus_hospitals');
-      return saved ? JSON.parse(saved) : SEED_HOSPITALS;
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return [];
+      const demoHospitalNames = new Set([
+        'City Care Hospital',
+        'Sunrise Multispecialty',
+        'St. Mary General Hospital',
+        'Sunshine Neuro Institute',
+      ]);
+      return parsed.every((hospital) =>
+        hospital && typeof hospital === 'object' && typeof hospital.name === 'string' && demoHospitalNames.has(hospital.name)
+      )
+        ? []
+        : parsed;
     } catch {
-      return SEED_HOSPITALS;
+      return [];
     }
   });
 
@@ -438,6 +451,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Hospital Admin Actions
+  const addHospital = (hospital: Omit<Hospital, 'id'> & { id?: string }): Hospital => {
+    const newHospital: Hospital = {
+      id: hospital.id || 'h_' + Date.now(),
+      name: hospital.name?.trim() || 'New Medical Center',
+      area: hospital.area?.trim() || 'City',
+      distanceKm: Number(hospital.distanceKm) || 0,
+      specialties: hospital.specialties?.length ? hospital.specialties : ['General'],
+      beds: hospital.beds && Object.keys(hospital.beds).length ? hospital.beds : { General: { total: 10, available: 10 } },
+      doctors: hospital.doctors || [],
+      staff: hospital.staff || [],
+      phone: hospital.phone,
+      rating: hospital.rating ?? 4.5,
+    };
+
+    setHospitals((prev) => [...prev, newHospital]);
+    setActiveHospitalId(newHospital.id);
+    showToast(`${newHospital.name} is now registered and visible in the citizen portal.`, 'success');
+    return newHospital;
+  };
+
   const updateBed = (hospitalId: string, ward: string, field: 'available' | 'total', val: number) => {
     setHospitals((prev) =>
       prev.map((h) => {
@@ -704,6 +737,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateAppointmentStatus,
         addAmbulanceRequest,
         updateAmbulanceStatus,
+        addHospital,
         updateBed,
         addWard,
         deleteWard,

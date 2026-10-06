@@ -3,9 +3,9 @@ import { useApp } from '../context/AppContext';
 import { Building2, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export const AdminAuth: React.FC = () => {
-  const { t, loginAdmin, setView, hospitals } = useApp();
+  const { t, loginAdmin, setView, hospitals, addHospital, showToast } = useApp();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
-  const [hospitalSelect, setHospitalSelect] = useState<string>('h1');
+  const [hospitalSelect, setHospitalSelect] = useState<string>(hospitals[0]?.id || '');
   const [hospitalName, setHospitalName] = useState<string>('');
   const [regNumber, setRegNumber] = useState<string>('TN/HOSP/2021/0084');
   const [email, setEmail] = useState<string>('');
@@ -16,14 +16,31 @@ export const AdminAuth: React.FC = () => {
 
     if (mode === 'signup') {
       const name = hospitalName.trim() || 'New Medical Center';
-      const newHospitalId = 'h_' + Date.now();
-      loginAdmin({
-        hospitalId: newHospitalId,
+      const newHospital = addHospital({
+        id: 'h_' + Date.now(),
         name,
+        area: 'New Registration',
+        distanceKm: 0,
+        specialties: ['General'],
+        beds: { General: { total: 10, available: 10 } },
+        doctors: [],
+        staff: [],
+        phone: '',
+        rating: 4.5,
+      });
+
+      loginAdmin({
+        hospitalId: newHospital.id,
+        name: newHospital.name,
         contact: email.trim(),
         regNumber,
       });
     } else {
+      if (hospitals.length === 0) {
+        showToast('No registered hospitals are available yet. Please register your hospital first.', 'error');
+        return;
+      }
+
       const selected = hospitals.find((h) => h.id === hospitalSelect) || hospitals[0];
       loginAdmin({
         hospitalId: selected.id,
@@ -96,17 +113,23 @@ export const AdminAuth: React.FC = () => {
               <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
                 Select Hospital Facility
               </label>
-              <select
-                value={hospitalSelect}
-                onChange={(e) => setHospitalSelect(e.target.value)}
-                className="w-full py-2.5 px-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 cursor-pointer"
-              >
-                {hospitals.map((h) => (
-                  <option key={h.id} value={h.id}>
-                    {h.name} ({h.area})
-                  </option>
-                ))}
-              </select>
+              {hospitals.length === 0 ? (
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200">
+                  No registered hospitals yet. Use the Register Hospital tab to add a facility.
+                </div>
+              ) : (
+                <select
+                  value={hospitalSelect}
+                  onChange={(e) => setHospitalSelect(e.target.value)}
+                  className="w-full py-2.5 px-3 bg-slate-800 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-amber-400 cursor-pointer"
+                >
+                  {hospitals.map((h) => (
+                    <option key={h.id} value={h.id}>
+                      {h.name} ({h.area})
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           ) : (
             <div>
@@ -171,7 +194,8 @@ export const AdminAuth: React.FC = () => {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-3 px-4 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-300 hover:from-amber-300 hover:to-amber-200 transition-all shadow-lg shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-1.5"
+              disabled={mode === 'login' && hospitals.length === 0}
+              className="w-full py-3 px-4 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-amber-400 to-amber-300 hover:from-amber-300 hover:to-amber-200 transition-all shadow-lg shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>{mode === 'login' ? 'Unlock Admin Portal' : 'Register & Verify Hospital'}</span>
               <ArrowRight className="w-4 h-4" />
